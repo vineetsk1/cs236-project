@@ -79,6 +79,10 @@ def main(args):
 	my_map[0] = {}
 	my_map[1] = {}
 	my_map[2] = {}
+	total_zeros = 0
+	total_ones = 0
+	total_twos = 0
+	all_total = 0
 
 	for i, val_batch in enumerate(val_loader):
 		val_batch = [tensor.cuda() if args.use_gpu else tensor for tensor in val_batch]
@@ -90,9 +94,28 @@ def main(args):
 			true_lbl = Y[j]
 			pred_lbl = out[j].max(1)[1]
 			my_map[true_lbl][pred_lbl] = my_map[true_lbl].get(pred_lbl, 0) + 1
+			if true_lbl == 0: total_zeros += 1
+			if true_lbl == 1: total_ones += 1
+			if true_lbl == 2: total_twos += 1
+			all_total += 1
+
+	print(total_zeros, total_ones, total_twos, all_total)
 
 	print(my_map)
 
+	my_map[0][0] /= total_zeros
+	my_map[0][1] /= total_zeros
+	my_map[0][2] /= total_zeros
+
+	my_map[1][0] /= total_ones
+	my_map[1][1] /= total_ones
+	my_map[1][2] /= total_ones
+
+	my_map[2][0] /= total_twos
+	my_map[2][1] /= total_twos
+	my_map[2][2] /= total_twos
+
+	print(my_map)
 
 if __name__ == '__main__':
 	main(args)
