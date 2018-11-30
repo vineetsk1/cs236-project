@@ -3,6 +3,7 @@ import gc
 import os
 import sys
 import time
+import datetime
 
 from collections import defaultdict
 
@@ -41,7 +42,7 @@ if experiment_name is None:
     experiment_name = now.strftime('%m%d_%H%M')
 
 model_path = os.path.join('weights', experiment_name)
-
+os.mkdir(model_path)
 
 def get_dtypes(args):
 	long_dtype = torch.LongTensor
@@ -139,7 +140,7 @@ def main(args):
 		print("Epoch [%d/%d] - Train -" % (epoch+1, args.num_epochs), metrics_string, "- Val -", val_metrics)
 
 		if val_acc() > max_val_acc and args.save_model_weights:
-			torch.save(model.state_dict(), os.path.join(model_path, epoch))
+			torch.save(model.state_dict(), os.path.join(model_path, str(epoch)))
 
 if __name__ == '__main__':
 	main(args)
