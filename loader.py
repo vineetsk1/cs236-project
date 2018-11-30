@@ -4,13 +4,14 @@ import torch
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
+from keras.utils import np_utils
 
 def data_collate(data):
 
 	x1, x2, y = list(zip(*data))
 	x1 = torch.cat(x1, dim=0).type(torch.FloatTensor)
 	x2 = torch.cat(x2, dim=0).type(torch.FloatTensor)
-	y = torch.cat(y, dim=0).type(torch.FloatTensor)
+	y = torch.cat(y, dim=0).type(torch.LongTensor)
 
 	return (x1, x2, y)
 
@@ -37,11 +38,14 @@ class PovertyDataset(Dataset):
 		self.X2 = np.load(self.X2)
 		self.X2 = self.X2.reshape((self.X2.shape[0], self.X2.shape[1], self.X2.shape[2], 1))
 		self.X2 = np.repeat(self.X2, 3, axis=3)
-		self.Y = np.load(self.Y).reshape((-1, 1))
-
-		# Binary classification
-		self.Y[self.Y > 0] = 1
-		self.Y[self.Y < 0] = 0
+		
+		# One-hot-vector 3-class classification
+		self.Y = np.load(self.Y) #.reshape((-1, 1))
+		self.Y[self.Y < -0.666] = -1.
+		self.Y[np.logical_and(self.Y < 0.666, self.Y >= -0.666)] = 0.
+		self.Y[self.Y >= 0.666] = 1.
+		self.Y += 1
+		# self.Y = np_utils.to_categorical(self.Y, 3)
 
 		self.Y = torch.from_numpy(self.Y)
 

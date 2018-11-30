@@ -35,9 +35,18 @@ def get_dtypes(args):
 		float_dtype = torch.cuda.FloatTensor
 	return long_dtype, float_dtype
 
+# Sigmoid Accuracy
+# def calc_accuracy(outputs, labels):
+	# outputs[:, 0] = (outputs[:, 0] >= 0.5).float()
+	# return torch.mean((outputs == labels).float()).item()
+
+# Multi Class Accuracy
 def calc_accuracy(outputs, labels):
-	outputs[:, 0] = (outputs[:, 0] >= 0.5).float()
-	return torch.mean((outputs == labels).float()).item()
+	_, max_outs = outputs.max(1)
+	# max_outs = np.argmax(outputs.cpu().detach().numpy(), axis=1)
+	# max_labels = np.argmax(labels, axis=1)
+	# return np.mean(max_outs == labels)
+	return torch.mean((max_outs == labels).float()).item()
 
 def main(args):
 	if args.use_gpu == 1:
@@ -58,16 +67,16 @@ def main(args):
 	print("Arguments", args.__dict__)
 
 	# model = PredictFromNightBaseline() 
-	# model = PredictFromDayBaseline()
-	model = PredictBaseline()
+	model = PredictFromDayBaseline()
+	# model = PredictBaseline()
 	model.type(float_dtype)
 	print(model)
 
 	optimizer = optim.Adam(
 		filter(lambda p: p.requires_grad, model.parameters()),
 		lr=args.learning_rate)
-	criterion = nn.BCELoss()
-
+	# criterion = nn.BCELoss()
+	criterion = nn.CrossEntropyLoss()
 
 	for epoch in range(args.num_epochs):
 		gc.collect()
@@ -92,7 +101,7 @@ def main(args):
 				loss_avg.update_step(loss.item(), Y.shape[0])
 				t.set_postfix(loss='{:05.3f}'.format(loss_avg()), acc='{:05.3f}'.format(acc_avg()))
 				t.update()
-
+#why doesnt the code go here
 		# Val metrics
 		model.eval()
 		val_loss = RunningAverage()

@@ -53,8 +53,8 @@ class PredictFromDayBaseline(nn.Module):
 		self.backbone = BackboneLayer()
 		self.fc1 = nn.Linear(512*8*8, 4096, bias=True)
 		self.fc2 = nn.Linear(4096, 4096, bias=True)
-		self.fc3 = nn.Linear(4096, 1, bias=True)
-		self.sig = nn.Sigmoid()
+		self.fc3 = nn.Linear(4096, 3, bias=True)
+		# self.sig = nn.Softmax()
 
 	# use day, not night
 	def forward(self, x, _):
@@ -62,7 +62,8 @@ class PredictFromDayBaseline(nn.Module):
 		x = x.view(x.shape[0], -1) # n x 512*8*8
 		x = F.relu(self.fc1(x))
 		x = F.relu(self.fc2(x))
-		x = self.sig(self.fc3(x))
+		x = self.fc3(x)
+		# x = self.sig(self.fc3(x))
 		return x
 
 class PredictFromNightBaseline(nn.Module):
@@ -71,8 +72,8 @@ class PredictFromNightBaseline(nn.Module):
 		self.backbone = BackboneLayer()
 		self.fc1 = nn.Linear(512*8*8, 4096, bias=True)
 		self.fc2 = nn.Linear(4096, 4096, bias=True)
-		self.fc3 = nn.Linear(4096, 1, bias=True)
-		self.sig = nn.Sigmoid()
+		self.fc3 = nn.Linear(4096, 3, bias=True)
+		# self.sig = nn.Softmax()
 
 	# use night, not day
 	def forward(self, _, x):
@@ -80,19 +81,20 @@ class PredictFromNightBaseline(nn.Module):
 		x = x.view(x.shape[0], -1) # n x 512*8*8
 		x = F.relu(self.fc1(x))
 		x = F.relu(self.fc2(x))
-		x = self.sig(self.fc3(x))
+		x = self.fc3(x)
+		# x = self.sig(self.fc3(x))
 		return x
 
 class PredictBaseline(nn.Module):
 	def __init__(self):
-		super(PredictFromNightBaseline, self).__init__()
+		super(PredictBaseline, self).__init__()
 		self.backbone = BackboneLayer()
 		self.fc1 = nn.Linear(512*8*8*2, 4096, bias=True)
-		(2): Dropout(p=0.5)
+		# (2): Dropout(p=0.5)
 		self.fc2 = nn.Linear(4096, 4096, bias=True)
-  		(2): Dropout(p=0.5)
-		self.fc3 = nn.Linear(4096, 1, bias=True)
-		self.sig = nn.Sigmoid()
+  		# (2): Dropout(p=0.5)
+		self.fc3 = nn.Linear(4096, 3, bias=True)
+		# self.sig = nn.Softmax()
 
 	# use night, not day
 	def forward(self, x1, x2):
@@ -101,5 +103,6 @@ class PredictBaseline(nn.Module):
 		x = torch.cat((x1, x2), 1) # stack dim=1 so n x (5128*8*8*2)
 		x = F.relu(self.fc1(x))
 		x = F.relu(self.fc2(x))
-		x = self.sig(self.fc3(x))
+		x = self.fc3(x)
+		# x = self.sig(self.fc3(x))
 		return x
