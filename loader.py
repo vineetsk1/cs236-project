@@ -37,7 +37,13 @@ class PovertyDataset(Dataset):
 		self.X2 = np.load(self.X2)
 		self.X2 = self.X2.reshape((self.X2.shape[0], self.X2.shape[1], self.X2.shape[2], 1))
 		self.X2 = np.repeat(self.X2, 3, axis=3)
-		self.Y = torch.from_numpy(np.load(self.Y))
+		self.Y = np.load(self.Y).reshape((-1, 1))
+
+		# Binary classification
+		self.Y[self.Y > 0] = 1
+		self.Y[self.Y < 0] = 0
+
+		self.Y = torch.from_numpy(self.Y)
 
 		# Image should be (batch, channels, width, height)
 		# Also transform with mean/std for VGG net

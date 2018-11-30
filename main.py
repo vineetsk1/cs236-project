@@ -12,7 +12,7 @@ import torch.optim as optim
 
 from tqdm import tqdm
 from loader import data_loader
-from baselines import PredictFromDayBaseline, PredictFromNightBaseline
+from baselines import PredictFromDayBaseline, PredictFromNightBaseline, PredictBaseline
 from utils import RunningAverage
 import numpy as np
 
@@ -34,10 +34,6 @@ def get_dtypes(args):
 		long_dtype = torch.cuda.LongTensor
 		float_dtype = torch.cuda.FloatTensor
 	return long_dtype, float_dtype
-
-# TODO
-def oversample():
-	pass 
 
 def calc_accuracy(outputs, labels):
 	outputs[:, 0] = (outputs[:, 0] >= 0.5).float()
@@ -62,7 +58,8 @@ def main(args):
 	print("Arguments", args.__dict__)
 
 	# model = PredictFromNightBaseline() 
-	model = PredictFromDayBaseline()
+	# model = PredictFromDayBaseline()
+	model = PredictBaseline()
 	model.type(float_dtype)
 	print(model)
 

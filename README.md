@@ -12,8 +12,6 @@
 2) night -> poverty (discriminative)
 2) day / night -> poor or not (discriminative)
 	imgs -> VGG features -> fully connected -> sigmoid
-3) gda baseline (generative)
-	https://github.com/mazefeng/ml
 
 # Notes
 
@@ -36,3 +34,6 @@
 	generator conditioned on daytime image
 	generates latent embedding
 	discriminator classifies embedding as fake/poor/rich
+4) generator -> conditioned on poverty, generates day (or night or day & night)
+   discriminator -> given day / night / both, predicts poverty (fake | poor | rich)
+   see if match up
