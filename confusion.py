@@ -62,7 +62,6 @@ def main(args):
 
 	print("Initializing val dataset")
 	val_dset, val_loader = data_loader(args.dataset_folder, val_dir, args.batch_size)
-	print("Training for %d" % args.num_epochs)
 	print("Arguments", args.__dict__)
 
 	model = PredictFromNightBaseline() 
@@ -92,7 +91,7 @@ def main(args):
 
 		for j in range(Y.shape[0]):
 			true_lbl = Y[j]
-			pred_lbl = out[j].max(1)[1]
+			_, pred_lbl = out[j].max(1)
 			my_map[true_lbl][pred_lbl] = my_map[true_lbl].get(pred_lbl, 0) + 1
 			if true_lbl == 0: total_zeros += 1
 			if true_lbl == 1: total_ones += 1
