@@ -26,6 +26,20 @@ parser.add_argument('--learning_rate', default=1e-5, type=float)
 
 parser.add_argument('--use_gpu', default=1, type=int)
 parser.add_argument('--gpu_num', default="0", type=str)
+parser.add_argument('--save_model_weights', default=0, type=int)
+parser.add_argument('--experiment_name', type=str, default=None,
+                    help='Experiment name to save logs and checkpoints under. If not specified, will be using timestamp instead.')
+
+
+
+print(args.experiment_name)
+experiment_name = args.experiment_name
+if experiment_name is None:
+    now = datetime.datetime.now()
+    experiment_name = now.strftime('%m%d_%H%M')
+
+model_path = os.path.join('weights', experiment_name)
+
 
 def get_dtypes(args):
 	long_dtype = torch.LongTensor
@@ -66,8 +80,8 @@ def main(args):
 	print("Training for %d" % args.num_epochs)
 	print("Arguments", args.__dict__)
 
-	# model = PredictFromNightBaseline() 
-	model = PredictFromDayBaseline()
+	model = PredictFromNightBaseline() 
+	# model = PredictFromDayBaseline()
 	# model = PredictBaseline()
 	model.type(float_dtype)
 	print(model)
@@ -77,6 +91,8 @@ def main(args):
 		lr=args.learning_rate)
 	# criterion = nn.BCELoss()
 	criterion = nn.CrossEntropyLoss()
+
+	max_val_acc = 0.0
 
 	for epoch in range(args.num_epochs):
 		gc.collect()
@@ -119,6 +135,9 @@ def main(args):
 		metrics_string = "Loss: {:05.3f} ; Acc: {:05.3f}".format(loss_avg(), acc_avg())
 		val_metrics = "Loss: {:05.3f} ; Acc: {:05.3f}".format(val_loss(), val_acc())
 		print("Epoch [%d/%d] - Train -" % (epoch+1, args.num_epochs), metrics_string, "- Val -", val_metrics)
+
+		if val_acc() > max_val_acc and args.save_model_weights:
+			torch.save(model.state_dict(), os.path.join(model_path, epoch))
 
 if __name__ == '__main__':
 	args = parser.parse_args()
