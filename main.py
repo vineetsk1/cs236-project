@@ -32,6 +32,8 @@ parser.add_argument('--experiment_name', type=str, default=None,
 
 
 
+
+args = parser.parse_args()
 print(args.experiment_name)
 experiment_name = args.experiment_name
 if experiment_name is None:
@@ -140,5 +142,4 @@ def main(args):
 			torch.save(model.state_dict(), os.path.join(model_path, epoch))
 
 if __name__ == '__main__':
-	args = parser.parse_args()
 	main(args)
